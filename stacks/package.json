@@ -1,0 +1,16 @@
+{
+  "name": "stacks-training",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Code examples to go along with the Ortege Youtube training series",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Justin Trollip",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2"
+  }
+}
