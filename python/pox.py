@@ -13,10 +13,10 @@ def get_no_stackers(value):
     # Create the full API endpoint URL
     url = f"{STACKS_API_URL}/v2/contracts/call-read/{contract_address}/{contract_name}/{function_name}"
 
-    # Hardcoded payload for cycle 94
+    # Payload for the specified cycle
     payload = {
         "sender": sender,  # Sender address
-        "arguments": [generate_hex(value)]  # Hardcoded hex argument for cycle 94
+        "arguments": [generate_hex(value)]  # Hex argument for the cycle
     }
 
     # Make the POST request
@@ -34,15 +34,19 @@ def get_no_stackers(value):
             result = response_json.get('result', None)
             result = decode_hex(result)
             
-            if result:
-                # Just print the result string directly
+            if result is not None:
+                # Print and return the number of stackers
                 print(f"Number of stackers: {result}")
+                return result
             else:
                 print("No result found in response.")
+                return None
         except Exception as e:
             print(f"Error parsing response: {e}")
+            return None
     else:
         print("Failed to retrieve data. Please check the API request.")
+        return None
 
 # Function to get stacker information for a specific cycle and index
 def get_stackers_by_cycle(cycle, index):
@@ -52,14 +56,10 @@ def get_stackers_by_cycle(cycle, index):
     # Create the full API endpoint URL
     url = f"{STACKS_API_URL}/v2/contracts/call-read/{contract_address}/{contract_name}/{function_name}"
 
-    # Convert cycle and index to hex, both padded to 8 characters
-    cycle_hex = f"0x{cycle:08x}"
-    index_hex = f"0x{index:08x}"
-
-    # Hardcoded payload for the cycle and index
+    # Payload for the cycle and index
     payload = {
-        "sender": sender,  # Sender address
-        "arguments": [cycle_hex, index_hex]  # Cycle and index arguments in hex
+        "sender": sender,  
+        "arguments": [generate_hex(cycle), generate_hex(index)]  # Cycle and index arguments in hex
     }
 
     # Make the POST request
@@ -67,7 +67,7 @@ def get_stackers_by_cycle(cycle, index):
 
     # Print the status code and response for debugging
     print(f"Status Code: {response.status_code}")
-    print("Response Text:")
+    print(f"Cycle {cycle}, Index {index} Response Text:")
     print(response.text)  # Print raw response
 
     # If the response is successful, attempt to parse the result
@@ -77,14 +77,14 @@ def get_stackers_by_cycle(cycle, index):
             result = response_json.get('result', None)
             
             if result:
-                # Just print the result string directly
+                # Print the stacker info
                 print(f"Stacker info (cycle {cycle}, index {index}): {result}")
             else:
-                print("No result found in response.")
+                print(f"No result found for cycle {cycle}, index {index}.")
         except Exception as e:
-            print(f"Error parsing response: {e}")
+            print(f"Error parsing response for cycle {cycle}, index {index}: {e}")
     else:
-        print("Failed to retrieve data. Please check the API request.")
+        print(f"Failed to retrieve data for cycle {cycle}, index {index}. Please check the API request.")
 
 def get_cycle_data(cycle):
     function_name = "get-total-ustx-stacked"
@@ -92,10 +92,10 @@ def get_cycle_data(cycle):
     # Create the full API endpoint URL
     url = f"{STACKS_API_URL}/v2/contracts/call-read/{contract_address}/{contract_name}/{function_name}"
 
-    # Hardcoded payload for cycle 94
+    # Payload for the specified cycle
     payload = {
         "sender": sender,  # Sender address
-        "arguments": [generate_hex(94)]  # Hardcoded hex argument for cycle 94
+        "arguments": [generate_hex(cycle)]  # Hex argument for the cycle
     }
 
     # Make the POST request
@@ -111,10 +111,10 @@ def get_cycle_data(cycle):
         try:
             response_json = response.json()
             result = response_json.get('result', None)
-            result = decode_hex(result) / 1e6
+            result = decode_hex(result) / 1e6  # Convert to appropriate units
             
             if result:
-                # Just print the result string directly
+                # Print the total uSTX stacked
                 print(f"Total uSTX stacked: {result}")
             else:
                 print("No result found in response.")
@@ -127,8 +127,8 @@ def generate_hex(value):
     # Convert the value to hexadecimal and remove the "0x" prefix
     hex_value = format(value, 'x')
     
-    # Pad with leading zeroes to ensure it's 16 characters (128 bits) long
-    padded_value = hex_value.zfill(33)  # 32 characters (128 bits)
+    # Pad with leading zeroes to ensure it's 33 characters
+    padded_value = hex_value.zfill(33)
     
     # Prepend "01" in front and adjust the length accordingly
     final_hex = "01" + padded_value[1:]  # Replace the first zero with '01'
@@ -148,17 +148,25 @@ def decode_hex(value):
     # Strip any remaining leading zeros
     stripped_value = value.lstrip('0')
     
+    if stripped_value == '':
+        return 0
+    
     # Convert the remaining hex string to decimal
     decimal_value = int(stripped_value, 16)
     
     return decimal_value
 
-# Function to get the total uSTX stacked for a specific cycle
+# Main execution
+if __name__ == "__main__":
+    cycle = 94
 
-
-get_cycle_data(94)
-get_no_stackers(94)
-
-# get_stackers_by_cycle(94, 0)
-
-
+    # Get total uSTX stacked for the cycle
+    get_cycle_data(cycle)
+    
+    # Get the number of stackers for the cycle
+    number_of_stackers = get_no_stackers(cycle)
+    
+    # If the number of stackers is retrieved successfully, iterate and get each stacker's info
+    if number_of_stackers is not None:
+        for index in range(number_of_stackers):
+            get_stackers_by_cycle(cycle, index)
