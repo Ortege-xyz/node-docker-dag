@@ -4,19 +4,24 @@ import {
 } from '@stacks/transactions';
 import { c32address } from 'c32check'; // Import the c32address function from c32check
 import { createObjectCsvWriter } from 'csv-writer';
-import fs from 'fs';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 // API base URL for Stacks mainnet
 const STACKS_API_URL = 'https://api.hiro.so';
 const contractAddress = "SP000000000000000000002Q6VF78";
 const contractName = "pox-4";
 const sender = "SP3TRVBX53CN78AS8C3HNTM3GPNDHGA34F9M7MAH2";
+const apiKey = process.env.API_KEY;  
 
 // CSV Writer setup
 const csvWriter = createObjectCsvWriter({
   path: './stackers.csv',
   header: [
     { id: 'index', title: 'Index' },
+    { id: 'cycle', title: 'Cycle' },         
     { id: 'poxAddrHash', title: 'PoX Address Hash' },
     { id: 'poxAddrVersion', title: 'PoX Address Version' },
     { id: 'signer', title: 'Signer' },
@@ -70,7 +75,11 @@ async function getNoStackers(value) {
   };
 
   try {
-    const response = await axios.post(url, payload);
+    const response = await axios.post(url, payload, {
+      headers: {
+        'X-API-KEY': apiKey  // Add the API key in the headers
+      }
+    });
     console.log(`Status Code: ${response.status}`);
 
     const result = response.data.result;
@@ -99,7 +108,11 @@ async function getStackersByCycle(cycle, index) {
   };
 
   try {
-    const response = await axios.post(url, payload);
+    const response = await axios.post(url, payload, {
+      headers: {
+        'X-API-KEY': apiKey  // Add the API key in the headers
+      }
+    });
 
     const result = response.data.result;
 
@@ -132,6 +145,7 @@ async function getStackersByCycle(cycle, index) {
 
       return {
         index: index,
+        cycle: cycle,
         poxAddrHash: `0x${hashbytesHex}`,
         poxAddrVersion: `0x${versionHex}`,
         signer: `0x${signerHex}`,

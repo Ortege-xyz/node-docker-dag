@@ -12,6 +12,8 @@
   "dependencies": {
     "@stacks/transactions": "^6.16.1",
     "axios": "^1.7.7",
+    "bech32": "^2.0.0",
+    "bs58": "^6.0.0",
     "c32check": "^2.0.0",
     "csv-writer": "^1.6.0",
     "dotenv": "^16.4.5",
