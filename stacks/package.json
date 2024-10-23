@@ -10,11 +10,13 @@
   "author": "Justin Trollip",
   "license": "Apache-2.0",
   "dependencies": {
-    "@stacks/transactions": "^6.16.1",
+    "@stacks/network": "^6.17.0",
+    "@stacks/transactions": "^6.17.0",
     "axios": "^1.7.7",
     "bech32": "^2.0.0",
     "bs58": "^6.0.0",
     "c32check": "^2.0.0",
+    "cross-fetch": "^4.0.0",
     "csv-writer": "^1.6.0",
     "dotenv": "^16.4.5",
     "node-fetch": "^3.3.2"
