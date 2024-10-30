@@ -194,7 +194,7 @@ async function getCycleData(cycle) {
 
 // Main execution
 (async function () {
-  const cycle = 94;
+  const cycle = 96;
 
   // Get total uSTX stacked for the cycle
   await getCycleData(cycle);

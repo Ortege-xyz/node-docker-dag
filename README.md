@@ -30,8 +30,7 @@ cd node-docker-dag
 2. Run locally
 
 ```
-npm run build
-node dist/zest.js
+npm run pox
 ```
 
 3. Build the Docker Image:

@@ -6,6 +6,7 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "npm run build && node dist/zest.js",
+    "pox": "node src/pox.js",
     "build": "tsc"
   },
   "author": "Justin Trollip",
